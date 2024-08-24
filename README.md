@@ -1,0 +1,1 @@
+resource/image以下に適当な画像をtitle.pngという名称で配置する必要があります
