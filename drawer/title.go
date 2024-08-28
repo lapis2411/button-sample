@@ -51,6 +51,8 @@ func (t Title) drawBackground(s *ebiten.Image, titleID int) {
 		op.ColorScale.Scale(1, 0.8, 0.8, 1)
 	} else if titleID == 3 {
 		op.ColorScale.Scale(1, 0.5, 0.5, 1)
+	} else if titleID == 4 {
+		op.ColorScale.Scale(0.5, 1, 1, 0.2)
 	}
 
 	s.DrawImage(bg, op)
@@ -64,7 +66,7 @@ func DrawMouseState(screen *ebiten.Image, image *ebiten.Image) {
 	}
 	op.GeoM.Scale(scale.Width, scale.Height)
 
-	op.GeoM.Translate(float64(50), float64(200))
+	op.GeoM.Translate(float64(500), float64(120))
 	op.ColorScale.ScaleAlpha(1)
 	screen.DrawImage(image, op)
 }

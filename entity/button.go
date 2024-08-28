@@ -3,16 +3,17 @@ package entity
 import (
 	"fmt"
 
+	"github.com/hajimehoshi/ebiten/v2"
+
 	"lapis2411/button-sample/types"
 )
 
 type Button struct {
 	*InteractiveObject
-	focused       bool
-	clicked       bool
-	preClicked    bool
-	clickingCount int
-	event         ButtonEvent
+	focused    bool
+	clicked    bool
+	preClicked bool
+	event      ButtonEvent
 }
 
 type ButtonOption func(*Button)
@@ -20,10 +21,7 @@ type ButtonEvent func(Button) error
 
 func NewButton(position types.Position, hitarea Hitarea, opts ...ButtonOption) Button {
 	obj := InteractiveObject{
-		Object: &Object{
-			position: position,
-			enable:   true,
-		},
+		Object:  NewObject(position, nil),
 		hitarea: hitarea,
 	}
 
@@ -32,7 +30,6 @@ func NewButton(position types.Position, hitarea Hitarea, opts ...ButtonOption) B
 		focused:           false,
 		clicked:           false,
 		preClicked:        false,
-		clickingCount:     0,
 	}
 	for _, option := range opts {
 		option(&b)
@@ -40,22 +37,21 @@ func NewButton(position types.Position, hitarea Hitarea, opts ...ButtonOption) B
 	return b
 }
 
-func NewRectangleButtonWithElement(w, h int, pos types.Position, event ButtonEvent) *Button {
-	rect := types.NewRectangle(w, h, pos)
+func NewRectangleButton(rect types.Rectangle, opts ...ButtonOption) *Button {
 	ha := NewBoxHitarea(rect, 0)
-	b := NewButton(pos, ha, WithClickedEvent(event))
+	b := NewButton(rect.Center(), ha, opts...)
 	return &b
 }
 
-func NewRectangleButton(rect types.Rectangle, event ButtonEvent) *Button {
-	ha := NewBoxHitarea(rect, 0)
-	b := NewButton(rect.Center(), ha, WithClickedEvent(event))
-	return &b
-}
-
-func WithClickedEvent(event ButtonEvent) ButtonOption {
+func WithButtonEvent(event ButtonEvent) ButtonOption {
 	return func(b *Button) {
 		b.event = event
+	}
+}
+
+func WithImage(image *ebiten.Image) ButtonOption {
+	return func(b *Button) {
+		b.Object.Image = image
 	}
 }
 
@@ -63,7 +59,7 @@ func (b *Button) SetButtonEvent(event ButtonEvent) {
 	b.event = event
 }
 
-func (b *Button) UpdateStatus(point types.Position, clicked bool) error {
+func (b *Button) UpdateStatus(point types.Position, clicked bool, justClicked bool) error {
 	if !b.IsEnable() {
 		return nil
 	}
@@ -74,10 +70,8 @@ func (b *Button) UpdateStatus(point types.Position, clicked bool) error {
 	// focusを外してクリックしている状態の時はときに選択を変えない
 	if !clicked {
 		b.clicked = false
-		b.clickingCount = 0
-	} else if b.focused {
+	} else if b.focused && justClicked {
 		b.clicked = true
-		b.clickingCount++
 	}
 	if b.event != nil {
 		return b.event(*b)
@@ -95,10 +89,6 @@ func (b *Button) IsFocused() bool {
 
 func (b *Button) IsClicked() bool {
 	return b.clicked
-}
-
-func (b *Button) ClickingFrameCount() int {
-	return b.clickingCount
 }
 
 func (b *Button) JustReleased() bool {

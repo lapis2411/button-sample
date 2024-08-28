@@ -27,8 +27,7 @@ const (
 
 type TitleSelection int
 type Title struct {
-	selector   TitleSelection
-	clickables entity.SingleClickableGroup
+	selector TitleSelection
 }
 
 const (
@@ -42,27 +41,24 @@ const (
 
 func NewTitle() (*Title, error) {
 	return &Title{
-		selector:   None,
-		clickables: entity.SingleClickableGroup{},
+		selector: None,
 	}, nil
 }
 
 func (t *Title) Initialize() (*data.Title, error) {
-	clickableObjs := []entity.Clickable{}
 	btns := make([]*entity.Button, NumberButtons)
 	for i, y := range []int{StartButtonPositionY, ContinueButtonPositionY, ExitButtonPositionY, NextButtonPositionY, BackButtonPositionY} {
-		b := entity.NewRectangleButtonWithElement(
-			ButtonWidth,
-			ButtonHeight,
-			types.Position{X: ButtonPositionX, Y: y},
-			func(button entity.Button) error {
-				if button.JustReleased() {
-					t.selector = TitleSelection(i + 1)
-				}
-				return nil
-			})
+		b := entity.NewRectangleButton(
+			types.NewRectangle(ButtonWidth, ButtonHeight, types.Position{X: ButtonPositionX, Y: y}),
+			entity.WithButtonEvent(
+				func(button entity.Button) error {
+					if button.IsClicked() {
+						t.selector = TitleSelection(i + 1)
+					}
+					return nil
+				}),
+		)
 		btns[i] = b
-		clickableObjs = append(clickableObjs, b)
 	}
 
 	d, err := data.NewTitle(
@@ -80,8 +76,9 @@ func (t *Title) Update(data *data.Title) error {
 	mx, my := ebiten.CursorPosition()
 	cursorPosition := types.Position{X: mx, Y: my}
 	mouseClicked := inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft)
+	justClicked := inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft)
 	for _, b := range data.Buttons() {
-		b.UpdateStatus(cursorPosition, mouseClicked)
+		b.UpdateStatus(cursorPosition, mouseClicked, justClicked)
 		b.UnFocus()
 	}
 	if t.selector == TitleStart {

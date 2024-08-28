@@ -11,17 +11,17 @@ import (
 	"lapis2411/button-sample/types"
 )
 
-type Title3 struct {
+type Title4 struct {
 	selector TitleSelection
 }
 
-func NewTitle3() (*Title3, error) {
-	return &Title3{
+func NewTitle4() (*Title4, error) {
+	return &Title4{
 		selector: None,
 	}, nil
 }
 
-func (t *Title3) Initialize() (*data.Title, error) {
+func (t *Title4) Initialize() (*data.Title, error) {
 	btns := make([]*entity.Button, NumberButtons)
 	for i, y := range []int{StartButtonPositionY, ContinueButtonPositionY, ExitButtonPositionY, NextButtonPositionY, BackButtonPositionY} {
 		b := entity.NewRectangleButton(
@@ -38,25 +38,24 @@ func (t *Title3) Initialize() (*data.Title, error) {
 	}
 
 	d, err := data.NewTitle(
-		data.WithText("This is Title3"),
+		data.WithText("This is Title4"),
 		data.WithButtons(btns))
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize title: %w", err)
 	}
 
-	d.TitleIndex = 3
+	d.TitleIndex = 4
 
 	return &d, err
 }
 
-func (t *Title3) Update(data *data.Title) error {
+func (t *Title4) Update(data *data.Title) error {
 	mx, my := ebiten.CursorPosition()
 	cursorPosition := types.Position{X: mx, Y: my}
 	mouseClicked := ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)
 	justClicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
 	for _, b := range data.Buttons() {
 		b.UpdateStatus(cursorPosition, mouseClicked, justClicked)
-		b.UnFocus()
 	}
 	if t.selector == TitleStart {
 		data.ButtonText = "START Button Clicked"
@@ -68,6 +67,6 @@ func (t *Title3) Update(data *data.Title) error {
 	return nil
 }
 
-func (t *Title3) Selector() TitleSelection {
+func (t *Title4) Selector() TitleSelection {
 	return t.selector
 }

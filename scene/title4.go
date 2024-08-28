@@ -10,28 +10,28 @@ import (
 	"lapis2411/button-sample/state"
 )
 
-var _ Scene = (*Title3)(nil)
+var _ Scene = (*Title4)(nil)
 
-type Title3 struct {
+type Title4 struct {
 	drawer drawer.Title
-	state  *state.Title3
+	state  *state.Title4
 	data   *data.Title
 }
 
-func NewTitle3() (Title3, error) {
+func NewTitle4() (Title4, error) {
 	dr, err := drawer.NewTitle()
 	if err != nil {
-		return Title3{}, err
+		return Title4{}, err
 	}
-	st, err := state.NewTitle3()
+	st, err := state.NewTitle4()
 	if err != nil {
-		return Title3{}, err
+		return Title4{}, err
 	}
 	dt, err := st.Initialize()
 	if err != nil {
-		return Title3{}, err
+		return Title4{}, err
 	}
-	t := Title3{
+	t := Title4{
 		drawer: dr,
 		state:  st,
 		data:   dt,
@@ -39,7 +39,7 @@ func NewTitle3() (Title3, error) {
 	return t, nil
 }
 
-func (t Title3) Update() (Scene, error) {
+func (t Title4) Update() (Scene, error) {
 	if err := t.state.Update(t.data); err != nil {
 		return nil, err
 	}
@@ -49,17 +49,11 @@ func (t Title3) Update() (Scene, error) {
 			return nil, fmt.Errorf("faile to go to stage select: %w", err)
 		}
 		return nt, nil
-	} else if t.state.Selector() == state.TitleNext {
-		nt, err := NewTitle4()
-		if err != nil {
-			return nil, fmt.Errorf("faile to go to stage select: %w", err)
-		}
-		return nt, nil
 	}
 	return t, nil
 }
 
-func (t Title3) Draw(s *ebiten.Image) error {
+func (t Title4) Draw(s *ebiten.Image) error {
 	if err := t.drawer.Update(s, *t.data); err != nil {
 		return err
 	}

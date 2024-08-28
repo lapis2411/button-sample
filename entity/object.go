@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"github.com/hajimehoshi/ebiten/v2"
+
 	"lapis2411/button-sample/types"
 )
 
@@ -19,7 +21,16 @@ type Hitarea interface {
 
 type Object struct {
 	position types.Position
+	Image    *ebiten.Image
 	enable   bool
+}
+
+func NewObject(position types.Position, image *ebiten.Image) *Object {
+	return &Object{
+		position: position,
+		Image:    image,
+		enable:   true,
+	}
 }
 
 func (o *Object) SetPosition(position types.Position) {

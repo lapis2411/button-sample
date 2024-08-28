@@ -2,6 +2,7 @@ package drawer
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
 	"lapis2411/button-sample/entity"
 	"lapis2411/button-sample/types"
@@ -16,7 +17,7 @@ func DrawButton(screen *ebiten.Image, button entity.Button, image *ebiten.Image)
 	op := &ebiten.DrawImageOptions{}
 	scale := types.Size{Width: 1, Height: 1}
 	if button.IsClicked() {
-		scale = getScaleByCount(button.ClickingFrameCount())
+		scale = getScaleByCount(inpututil.MouseButtonPressDuration(ebiten.MouseButtonLeft))
 	} else if button.IsFocused() {
 		scale = types.Size{Width: EFFECT_FOCUS_EXPAND, Height: EFFECT_FOCUS_EXPAND}
 	}
